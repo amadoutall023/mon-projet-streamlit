@@ -3,6 +3,18 @@ warnings.filterwarnings("ignore")
 
 import os
 import traceback
+import sys
+
+# Compatibility shim for scikit-learn version differences (_RemainderColsList refactoring)
+try:
+    import sklearn.compose._column_transformer as ct
+    if not hasattr(ct, '_RemainderColsList'):
+        class _RemainderColsList(list):
+            pass
+        ct._RemainderColsList = _RemainderColsList
+except Exception:
+    pass
+
 import streamlit as st
 import pandas as pd
 import joblib
