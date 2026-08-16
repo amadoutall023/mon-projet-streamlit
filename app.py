@@ -1,6 +1,7 @@
 import warnings
 warnings.filterwarnings("ignore")
 
+import os
 import streamlit as st
 import pandas as pd
 import joblib
@@ -69,7 +70,8 @@ st.markdown("""
 # -------------------------
 @st.cache_resource
 def load_resources():
-    model = joblib.load("crop_yield_model.pkl")
+    model_path = "crop_yield_model.joblib" if os.path.exists("crop_yield_model.joblib") else "crop_yield_model.pkl"
+    model = joblib.load(model_path)
     preprocessor = joblib.load("preprocessor.pkl")
     with open("crop_types.json", "r") as f:
         crop_types = json.load(f)
