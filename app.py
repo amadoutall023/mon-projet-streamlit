@@ -2,6 +2,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 import os
+import traceback
 import streamlit as st
 import pandas as pd
 import joblib
@@ -76,7 +77,6 @@ def load_resources():
     with open("crop_types.json", "r") as f:
         crop_types = json.load(f)
     
-    # Extraction dynamique des 101 pays connus par le préprocesseur
     try:
         area_categories = list(preprocessor.named_transformers_['cat'].categories_[0])
         countries = sorted(area_categories)
@@ -90,6 +90,7 @@ try:
     model, preprocessor, crop_types, countries = load_resources()
 except Exception as e:
     st.error(f"Erreur lors du chargement des fichiers : {e}")
+    st.code(traceback.format_exc())
     st.stop()
 
 
@@ -195,7 +196,6 @@ col1, col2 = st.columns(2)
 
 with col1:
 
-    # Choix du pays parmi la liste complète des 101 pays du modèle
     default_index = countries.index("France") if "France" in countries else 0
     area = st.selectbox(
         "Pays / Région (101 pays pris en charge)",
@@ -296,7 +296,6 @@ with tab2:
 
         st.subheader(f"Classement des cultures pour {area}")
 
-        # Graphique altair pour visualiser les 10 meilleures cultures
         chart = alt.Chart(results_df.head(10)).mark_bar(cornerRadiusEnd=4).encode(
             x=alt.X('Rendement prédit:Q', title='Rendement prédit (hg/ha)'),
             y=alt.Y('Culture:N', sort='-x', title='Culture'),
